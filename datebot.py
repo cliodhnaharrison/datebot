@@ -4,7 +4,7 @@ class Date:
 
     def __init__(self, name, pricepoint, dress_code, effort, location):
         self.name = name
-        self.pricepoint = pricepoint
+        self.pricepoint = int(pricepoint)
         self.dress_code = dress_code
         self.effort = effort
         self.location = location
@@ -16,7 +16,7 @@ class Date:
         return self.name.lower()
 
     def get_pricepoint(self):
-        return self.pricepoint.lower()
+        return self.pricepoint
 
     def get_dress_code(self):
         return self.dress_code.lower()
@@ -43,9 +43,16 @@ def load_dates():
 def decide_date(pricepoint, dress_code, effort, location):
     dates = load_dates()
     results = []
+
+    if "-" in pricepoint:
+        min_price, max_price = map(int, pricepoint.split("-"))
+    else:
+        min_price = 0
+        max_price = int(pricepoint)
+
     for date in dates:
         if (((date.get_effort() == effort) or not effort) and
-        ((date.get_pricepoint() == pricepoint) or not pricepoint) and
+        ((date.get_pricepoint() <= max_price) and (date.get_pricepoint() >= min_price) or not pricepoint) and
         ((date.get_dress_code() == dress_code) or not dress_code) and
         ((date.get_location() == location) or not location)):
             results.append(date)
@@ -55,7 +62,7 @@ def decide_date(pricepoint, dress_code, effort, location):
 def main():
     if not os.path.isfile("dates.csv"):
         raise Exception("No dates file exists")
-    pricepoint = input("What is your pricepoint? ").lower()
+    pricepoint = input("What is your pricepoint? ")
     dress_code = input("What is your dress code? ").lower()
     effort = input("What is your effort? ").lower()
     location = input("What is your location? ").lower()
