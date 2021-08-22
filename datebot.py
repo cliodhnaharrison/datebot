@@ -31,9 +31,12 @@ class Date:
 def load_dates():
     reader = open("dates.csv", "r")
     dates = []
-    for line in reader.readlines():
-        d = Date(*line.strip().split(","))
-        dates.append(d)
+    try:
+        for line in reader.readlines():
+            d = Date(*line.strip().split(","))
+            dates.append(d)
+    finally:
+        reader.close()
     return dates
 
 
@@ -41,16 +44,17 @@ def decide_date(pricepoint, dress_code, effort, location):
     dates = load_dates()
     results = []
     for date in dates:
-        if (date.get_effort() == effort and
-        date.get_pricepoint() == pricepoint and
-        date.get_dress_code() == dress_code and
-        date.get_location() == location):
+        if (((date.get_effort() == effort) or not effort) and
+        ((date.get_pricepoint() == pricepoint) or not pricepoint) and
+        ((date.get_dress_code() == dress_code) or not dress_code) and
+        ((date.get_location() == location) or not location)):
             results.append(date)
 
     return results
 
 def main():
-    os.path.isfile("/dates.csv")
+    if not os.path.isfile("dates.csv"):
+        raise Exception("No dates file exists")
     pricepoint = input("What is your pricepoint? ").lower()
     dress_code = input("What is your dress code? ").lower()
     effort = input("What is your effort? ").lower()
