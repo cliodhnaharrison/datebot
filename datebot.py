@@ -8,6 +8,7 @@ class Date:
         self.dress_code = dress_code
         self.effort = effort
         self.location = location
+        self.dress_code_scale = ["casual", "smart casual", "semi formal", "formal"]
 
     def __str__(self):
         return self.name
@@ -20,6 +21,9 @@ class Date:
 
     def get_dress_code(self):
         return self.dress_code.lower()
+
+    def get_acceptable_dress_codes(self, user_dress_code):
+        return self.dress_code_scale[:self.dress_code_scale.index(user_dress_code) + 1]
 
     def get_effort(self):
         return self.effort.lower()
@@ -44,16 +48,21 @@ def decide_date(pricepoint, dress_code, effort, location):
     dates = load_dates()
     results = []
 
+    # TODO: Add process user input function, possibly overload decide_date function to allow for min_price missing
+
     if "-" in pricepoint:
         min_price, max_price = map(int, pricepoint.split("-"))
-    else:
+    elif pricepoint:
         min_price = 0
         max_price = int(pricepoint)
+    else:
+        min_price = 0
+        max_price = 10000
 
     for date in dates:
         if (((date.get_effort() == effort) or not effort) and
         ((date.get_pricepoint() <= max_price) and (date.get_pricepoint() >= min_price) or not pricepoint) and
-        ((date.get_dress_code() == dress_code) or not dress_code) and
+        ((dress_code in date.get_acceptable_dress_codes(dress_code)) or not dress_code) and
         ((date.get_location() == location) or not location)):
             results.append(date)
 
